@@ -1,2 +1,3 @@
-# BiomedicalNLPExperiments
-Repository to store scripts for biomedical NLP experiments
+# Biomedical NLP Experiments
+---
+Repository to store scripts for Biomedical NLP experiments
