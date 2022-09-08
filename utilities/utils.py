@@ -204,7 +204,7 @@ def test_dictutils():
 def test_httputils():
 	hu = HTTPUtils()
 	REST_URL = "http://data.bioontology.org"
-	API_KEY = "5b7f7e20-015c-496f-ade9-ca341345cef7"
+	API_KEY = "INSERT_API_KEY"
 	headers = [('Authorization', 'apikey token=' + API_KEY)]
 	# = hu.get_json(REST_URL+"/annotator", headers)
 
