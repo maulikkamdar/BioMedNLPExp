@@ -52,7 +52,6 @@ class SPARQLOperator(object):
 		results = g.query(query)
 		return results
 
-# alternatives to creating an object?
 class MatrixIO(object):
 	def save_matrix(self, x, filename):
 		with open(filename, 'wb') as outfile:
@@ -85,19 +84,6 @@ class FileUtils(object):
 			size = os.stat(folder_path + _file).st_size
 			file_dict[_file] = size
 		return file_dict
-		'''returns a simple dict indexed by values in the given column from a TSV file'''
-	'''
-	def get_simple_dict(self, file_name, column=0, header=None, names=[], cols=[]):
-		f = open(file_name)
-		flines = f.readlines()
-		f.close()
-		fdict = {}
-		for k in range(len(flines)):
-			if header and k==0:
-				continue
-			fparts = flines[k].strip().split("\t")
-			fdict[fparts[column]] = {names[m]: fparts[cols[m]] for m in cols}
-		return fdict'''
 
 
 class SIZE_UNIT(enum.Enum):
@@ -116,51 +102,6 @@ def convert_unit(size_in_bytes, unit):
 		return size_in_bytes/(1024*1024*1024)
 	else:
 		return size_in_bytes
-
-class DictUtils(object):
-	def merge_two_dicts(self, x, y):
-		'''Given two dicts, merge them into a new dict as a shallow copy.'''
-		z = x.copy()
-		z.update(y)
-		return z
-
-	def iterative_merge_pickles(self, folder_path, filename_generator=None, exclusion_criteria=None, final_name=None, verbose=True, total_iter=None):
-		'''Iteratively merge dictionaries stored as pickles in the folder_path, adhering to certain exclusion_criteria (excrit=True if you want to exclude those files'''
-		mfio = MatrixIO()
-		found_true_love = False
-		num_iter = 0
-		total_iter = total_iter if total_iter else 10
-		while True:
-			# Use a queue data structure here ... one pop for true
-			if found_true_love or num_iter > total_iter:
-				# rename file to final_name
-				break
-			num_iter += 1
-			fu = FileUtils()
-			fileset = fu.get_reqd_fileset(folder_path, exclusion_criteria)
-			print (fileset)
-			exists_current = None
-			if len(fileset) == 1:
-				found_true_love = True
-				break
-			for file in fileset:
-				if not exists_current:
-					exists_current = file
-				else:
-					dict1 = mfio.load_matrix(folder_path + "/" + file)
-					dict2 = mfio.load_matrix(folder_path + "/" + exists_current)
-					merged_dict = self.merge_two_dicts(dict1, dict2)
-					if not filename_generator:
-						# this is a last minute resort assuming the user is too lazy to provide a filename_generator function
-						filename = hashlib.sha1(exists_current + "-" + file) 
-					else:
-						filename = filename_generator(exists_current, file)
-					mfio.save_matrix(merged_dict, folder_path + "/" + filename)
-					os.remove(folder_path + "/" + exists_current)
-					os.remove(folder_path + "/" + file)
-					if verbose:
-						print ("Merged file " + exists_current + " and file " + file + " into " + filename)
-					exists_current = None 
 
 class FrameUtils(object):
 	def convertdf(self, df, column):
@@ -183,77 +124,6 @@ class HTTPUtils(object):
 			print ('Error Encountered')
 			return None
 
-def test_dictutils():
-	du = DictUtils()
-	def expcri(x):
-		# this should be your own exclusion criteria
-		#print x
-		xparts = x.split(".")
-		if xparts[1] != "dat" or xparts[0][0:5] != "assoc":
-			return True
-		return False
-	def filename_gen(name1, name2):
-		name1parts = name1.split(".")[0].split("_")
-		name2parts = name2.split(".")[0].split("_")
-		new_name = "_".join(name1parts[0:len(name1parts)-1]) + "_"
-		new_name = new_name + hashlib.sha1(name1parts[len(name1parts)-1] + "-" + name2parts[len(name2parts)-1]).hexdigest()
-		new_name = new_name + ".dat"
-		return new_name
-	du.iterative_merge_pickles("dat_files", filename_generator=filename_gen, exclusion_criteria=expcri, final_name="assoc_paths_final.dat", verbose=True)
-
-def test_httputils():
-	hu = HTTPUtils()
-	REST_URL = "http://data.bioontology.org"
-	API_KEY = "INSERT_API_KEY"
-	headers = [('Authorization', 'apikey token=' + API_KEY)]
-	# = hu.get_json(REST_URL+"/annotator", headers)
-
-def merge(x):
-	"merge lists of list in one list"
-	a = []
-	for m in x:
-		a.extend(m)
-	return a
-
 def get_rel_uuid(uri):
 	urip = uri.split("/")
 	return urip[len(urip)-1]
-
-def matrix_comb_cos(m1, m2):
-	dp = m1.dot(m2.T)
-	sen1 = np.linalg.norm(np.array(m1), axis=1)
-	sen2 = np.linalg.norm(np.array(m2), axis=1)
-	sen2 = sen2.reshape(1, sen2.shape[0])
-	sen1 = sen1.reshape(sen1.shape[0], 1)
-	dp = dp/sen2
-	dp = dp/sen1
-	return dp
-
-def matrix_comb_cos_fast(m1, m2, set_columns=True, score_threshold=None, rounding=None):
-	dp = cosine_similarity(m1, m2)
-	if score_threshold: dp[dp < score_threshold] = 0
-	if rounding: dp = dp.round(rounding)
-	dp = pd.DataFrame(dp)
-	if set_columns: dp.columns = m2.T.columns
-	return dp
-
-def node_selector_single(G, f):
-    selset = []
-    for k in G.nodes():
-        if f(G, k): selset.append(k)
-    return selset
-
-def stack_data_frames(dframe_array):
-	stacked_dframe = pd.DataFrame()
-	ccount = 0
-	for k in dframe_array:
-		if k.shape[0] > 0: 
-			if ccount == 0: stacked_dframe = k
-			else: stacked_dframe = pd.concat([stacked_dframe, k], axis=0)
-			ccount += 1
-	return stacked_dframe
-
-if __name__ == "__main__":
-	test_dictutils()
-
-	
