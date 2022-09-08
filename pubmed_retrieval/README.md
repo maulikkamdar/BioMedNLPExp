@@ -1,5 +1,7 @@
 ## Extract content from PubMed Medline FTP
 
+---
+
 This folder contains a script to extract content from [PubMed MEDLINE FTP](https://www.nlm.nih.gov/databases/download/pubmed_medline.html). 
 
 PubMed is used as a corpora to train a GLOVE model to generate biomedical word embedding vectors. These GLOVE vectors are used in the following publications.
@@ -58,4 +60,3 @@ Extracted abstracts 21918
 This is printed for each file. It should be noted that the abstracts from which relevant fields are extracted might be less than the number of abstracts in each XML file. A possible justification is the requirement of `ArticleTitle` and `AbstractText` to be present in each abstract, and in some cases this might not be true. Or there might be a possible bug in the script!
 
 ** PS: The shell script takes a while to execute due to the size and number of XML files. You can slightly modify the script to only use a few XML files or terminate using `Ctrl+Z` or `Ctrl+C`**
-
