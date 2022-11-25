@@ -2,7 +2,9 @@
 
 ---
 
-This folder contains Python scripts to generate a knowledge graph of biomedical concepts and relations using specific terminologies and taxonomies in the UMLS MetaThesaurus. 
+This folder contains Python scripts to generate a knowledge graph of biomedical concepts and relations using specific terminologies and taxonomies in the UMLS MetaThesaurus. These scripts are an updated version of the code shared as part of the publication:
+
+- Kamdar, M. R., Hamamsy, T., Shelton, S., Vala, A., Eftimov, T., Zou, J., & Tamang, S. (2019). A knowledge graph-based approach for exploring the US opioid epidemic. Proceedings of the AI for Social Good Workshop, co-located with the 7th International Conference on Learning Representations (ICLR), May 2019 (arXiv preprint arXiv:1905.11513).
 
 **Note:** No UMLS data or any underlying terminologies are shared through this Github repository. The repository only contains scripts that enable you to convert the different UMLS metathesaurus files into a unified NetworkX GPickle data representation, that can be used for other purposes (tagging, concept similarities, etc.). Please ensure that you adhere to the correct license terms of UMLS and underlying terminologies when sharing and reusing the original data and the transformed data representations.
 
