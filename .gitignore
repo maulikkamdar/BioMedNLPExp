@@ -131,3 +131,5 @@ dmypy.json
 data_folder
 .DS_Store
 .Rhistory
+tempdata
+2022AA/META/

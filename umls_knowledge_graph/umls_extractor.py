@@ -30,6 +30,7 @@ class UMLSExtractor():
         self.determine_relevant_vocabs()
         selected_vocab_terms = self.english_umls_terms[self.english_umls_terms['SAB'].apply(lambda x: x in self.allowed_vocabs)]
         self.selected_vocab_terms = selected_vocab_terms[['CUI', 'TS', 'AUI', 'SAB', 'CODE', 'STR']]
+        self.cui_list = set(self.selected_vocab_terms['CUI'])
         print ("Relevant UMLS concepts in selected terminologies found:", self.selected_vocab_terms.shape[0])
         print ("--------------------")
 
@@ -47,8 +48,7 @@ class UMLSExtractor():
 
     def extract_alternate_labels(self):
         print ("Extracting alternate labels")
-        self.cui_list = set(self.selected_vocab_terms['CUI'])
-        selected_cui_list_alt = self.english_umls_terms[self.english_umls_terms['CUI'].apply(lambda x: x in cui_list)]
+        selected_cui_list_alt = self.english_umls_terms[self.english_umls_terms['CUI'].apply(lambda x: x in self.cui_list)]
         selected_cui_list_alt = selected_cui_list_alt[selected_cui_list_alt['SAB'].apply(lambda x: x not in self.allowed_vocabs)]
         selected_cui_list_alt = selected_cui_list_alt[['CUI', 'TS', 'STR']]
         self.alternate_labels = selected_cui_list_alt.drop_duplicates(['CUI', 'STR'])
@@ -78,7 +78,9 @@ class UMLSExtractor():
         relations = pd.read_csv(self.umls_folder + 'MRREL.RRF', sep = "|", header=None, keep_default_na=False)
         relations = relations[relations[10].apply(lambda x: x in self.allowed_vocabs)]
         relations = relations[relations[7].apply(lambda x: len(str(x)) > 0)]
-        self.relations = relations_sel[[0,1,2,3,4,5,6,7,8,10,11]]
+        relations = relations[[0,1,2,3,4,5,6,7,8,10,11]]
+        relations.columns = ['CUI1', 'AUI1', 'STYPE1', 'REL', 'CUI2', 'AUI2', 'STYPE2', 'RELA', 'RUI', 'SAB', 'SL']
+        self.relations = relations
         print ("Associative relations found:", self.relations.shape[0])
         print ("--------------------")
 
