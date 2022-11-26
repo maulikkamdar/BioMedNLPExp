@@ -101,7 +101,6 @@ args = parser.parse_args()
 
 umls_folder = args.umlsfolder if len(args.umlsfolder) > 0 else '2022AA/META/'
 output_folder = args.outputfolder if len(args.outputfolder) > 0 else 'output/extract/'
-#allowed_vocabs = ['SNOMEDCT_US', 'ICD10CM', 'ICD10PCS', 'CPT', 'LNC', 'RXNORM']
 allowed_vocabs = [k.strip().upper() for k in args.terminologies.split(",")] if len(args.terminologies) > 0 else ['SNOMEDCT_US']
 umls_extractor = UMLSExtractor(umls_folder = umls_folder, output_folder = output_folder, allowed_vocabs = allowed_vocabs)
 umls_extractor.extract_save_all()
